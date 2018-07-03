@@ -22,39 +22,67 @@ class App extends Component {
   componentDidMount() {
     axios.get(`https://practiceapi.devmountain.com/api/posts`)
          .then((res) => {
+          //console.log(res);
            this.setState({posts: res.data});
          })
-         .catch('errror');
+         .catch('error');
   }
 
-  updatePost() {
+  updatePost(text, id) {
+    axios.put(`https://practiceapi.devmountain.com/api/posts?id=${ id }`, { text })
+         .then((res) => {
+          //console.log(res);
+           this.setState({
+             posts: res.data
+           });
+         })
+         .catch("error");
   
   }
 
-  deletePost() {
-
+  deletePost(id) {
+    axios.delete(`https://practiceapi.devmountain.com/api/posts?id=${ id }`)
+         .then((res) => {
+          //console.log(res)
+          this.setState({
+            posts: res.data
+          });
+         })
   }
 
-  createPost() {
-
+  createPost(text) {
+    axios.post(`https://practiceapi.devmountain.com/api/posts`, { text })
+         .then((res) => {
+ 
+           this.setState({
+             posts: res.data
+           });
+         })
   }
 
   render() {
+ 
     const { posts } = this.state;
-    let renderPost = posts.map((element, i) => {
+    console.log(this.state);
+    let renderPost = posts.map(( post ) => {
       return (
-        <Post key={element.id} />
+        <Post key={ post.id }
+              text={ post.text }
+              date={ post.date }
+              updatePostFn={ this.updatePost } 
+              id={ post.id }
+              deletePostFn={ this.deletePost }/>
       );
     });
-
+ 
     return (
       <div className="App__parent">
         <Header />
 
         <section className="App__content">
 
-          <Compose />
-          {renderPost}
+          <Compose createPostFn={ this.createPost }  />
+          { renderPost }
         </section>
       </div>
     );
